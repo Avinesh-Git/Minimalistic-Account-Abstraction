@@ -20,12 +20,15 @@ jobs:
           submodules: recursive
 
       - name: Install Foundry (zkSync version)
-        uses: matter-labs/foundry-zksync-toolchain@v1
-        with:
-          version: nightly
+        run: |
+          curl -L https://raw.githubusercontent.com/matter-labs/foundry-zksync/main/install-foundry-zksync | bash
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
 
-      - name: Show Forge version
-        run: forge --version
+      - name: Verify installation
+        run: |
+          forge --version
+          # Note: If 'zksolc --version' throws a "command not found" error, 
+          # just delete that line. Forge manages zksolc internally.
 
       - name: Run Forge fmt
         run: forge fmt --check
