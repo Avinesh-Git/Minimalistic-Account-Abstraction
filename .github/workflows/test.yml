@@ -7,9 +7,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  FOUNDRY_PROFILE: ci
-
 jobs:
   check:
     name: Foundry project
@@ -17,13 +14,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           submodules: recursive
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
+      - name: Install Foundry (zkSync version)
+        uses: matter-labs/foundry-zksync-toolchain@v1
+        with:
+          version: nightly
 
       - name: Show Forge version
         run: forge --version
@@ -31,8 +30,14 @@ jobs:
       - name: Run Forge fmt
         run: forge fmt --check
 
-      - name: Run Forge build
+      - name: Run Forge build (EVM)
         run: forge build --sizes
 
-      - name: Run Forge tests
-        run: forge test -vvv
+      - name: Run EVM tests
+        run: forge test --match-path "test/ethereum/*" -vvv
+
+      - name: Run Forge build (zkSync)
+        run: FOUNDRY_PROFILE=zksync forge build --zksync --system-mode=true --sizes
+
+      - name: Run zkSync tests
+        run: FOUNDRY_PROFILE=zksync forge test --match-path "test/zksync/*" --zksync --system-mode=true -vvv
