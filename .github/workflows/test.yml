@@ -19,16 +19,9 @@ jobs:
           persist-credentials: false
           submodules: recursive
 
-      - name: Install Foundry (zkSync version)
-        run: |
-          curl -L https://raw.githubusercontent.com/matter-labs/foundry-zksync/main/install-foundry-zksync | bash
-          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
-
-      - name: Verify installation
-        run: |
-          forge --version
-          # Note: If 'zksolc --version' throws a "command not found" error, 
-          # just delete that line. Forge manages zksolc internally.
+      # Use the official zkSync toolchain action
+      - name: Install Foundry-ZKsync
+        uses: dutterbutter/foundry-zksync-toolchain@v1
 
       - name: Run Forge fmt
         run: forge fmt --check
